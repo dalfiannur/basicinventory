@@ -1,0 +1,35 @@
+{
+  "name": "basicinventory",
+  "version": "1.0.0",
+  "description": "Basic Inventory System",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node .",
+    "dev": "nodemon --exec ts-node \"src/index.ts\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dalfiannur/basicinventorysystem.git"
+  },
+  "keywords": [
+    "Inventory"
+  ],
+  "author": "Dikry Alfiannur Wahyu",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dalfiannur/basicinventorysystem/issues"
+  },
+  "homepage": "https://github.com/dalfiannur/basicinventorysystem#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "typeorm": "^0.2.25",
+    "typescript": "^3.9.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.6",
+    "nodemon": "^2.0.4",
+    "ts-node": "^8.10.1"
+  }
+}
