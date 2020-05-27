@@ -8,7 +8,7 @@
 import {
     Column,
     CreateDateColumn,
-    Entity,
+    Entity, JoinColumn,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
@@ -23,15 +23,27 @@ export class Inventory {
     id!: number;
 
     @Column()
+    createdByUserId!: number;
+
+    @Column()
+    updatedByUserId?: number;
+
+    @Column()
     isOut!: boolean;
 
     @Column()
     quantity!: number;
 
     @ManyToOne(type => User)
+    @JoinColumn({
+        referencedColumnName: 'createdByUserId'
+    })
     createdBy!: User;
 
     @ManyToOne(type => User)
+    @JoinColumn({
+        referencedColumnName: 'updatedByUserId'
+    })
     updatedBy?: User;
 
     @CreateDateColumn()

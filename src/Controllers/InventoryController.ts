@@ -8,14 +8,14 @@
 import {NextFunction, Request, Response} from "express";
 import {getRepository, Repository} from "typeorm";
 import {Inventory} from "../Entities/Inventory";
-import {IFindAllInventories} from "../Requests/IInventoryRequest";
+import {ICreateInventory, IFindAllInventories, IUpdateInventory} from "../Requests/InventoryRequest";
 import {ParsePaginationRequest} from "../Helpers/PaginationHelper";
 
 export class InventoryController {
     private readonly repository: Repository<Inventory> = getRepository(Inventory);
 
-    public async findAll(req: IFindAllInventories, res: Response, next: NextFunction) {
-        const { skip, page, take } = ParsePaginationRequest(req);
+    public findAllInventories = async (req: IFindAllInventories, res: Response, next: NextFunction) => {
+        const { skip, take } = ParsePaginationRequest(req);
 
         const [inventories, total] = await this.repository
             .findAndCount({ skip, take })
@@ -31,22 +31,25 @@ export class InventoryController {
         });
     }
 
-    public async findById(req: Request, res: Response, next: NextFunction) {
+    public findById = async (req: Request, res: Response, next: NextFunction) => {
         const id = +req.params.id;
-        const inventory = await this.repository.findOne(id);
+        const inventory = await this.repository.findOne(id, {
+            relations: ['createdBy', 'updatedBy']
+        });
 
         if (!inventory) throw next(new Error('Inventory not found'));
 
         return res.json({
-            message: 'User found',
+            message: 'Inventory found',
             data: inventory
         });
     }
 
-    public async create(req: Request, res: Response, next: NextFunction) {
+    public create = async (req: ICreateInventory, res: Response, next: NextFunction) => {
+        req.body.createdByUserId = req.user.id;
         const inventory = this.repository.create(req.body);
 
-        await this.repository.insert(user)
+        await this.repository.insert(inventory)
             .catch((error: Error) => {
                 throw next(error);
             });
@@ -57,7 +60,7 @@ export class InventoryController {
         });
     }
 
-    public async updateById(req: Request, res: Response, next: NextFunction) {
+    public updateById = async (req: IUpdateInventory, res: Response, next: NextFunction) => {
         const id = +req.params.id;
         const inventory = await this.repository.findOne(id);
 
@@ -65,28 +68,29 @@ export class InventoryController {
 
         const prevData = inventory;
 
-        inventory.isOut = req.body.name || inventory.isOut;
-        inventory.quantity = req.body.username || inventory.quantity;
+        inventory.isOut = req.body.isOut || inventory.isOut;
+        inventory.quantity = req.body.quantity || inventory.quantity;
+        inventory.updatedByUserId = req.user.id;
 
-        await this.repository.save(user)
+        await this.repository.save(inventory)
             .catch((error: Error) => {
                 throw next(error);
             });
 
         return res.json({
-            message: 'User has been updated.',
+            message: 'Inventory has been updated.',
             data: {
                 prev: prevData,
-                current: user
+                current: inventory
             }
         });
     }
 
-    public async deleteById(req: Request, res: Response, next: NextFunction) {
+    public deleteById = async (req: Request, res: Response, next: NextFunction) => {
         const id = +req.params.id;
         const user = await this.repository.findOne(id);
 
-        if (!user) throw next(new Error('User not found'));
+        if (!user) throw next(new Error('Inventory not found'));
 
         await this.repository.delete(id)
             .catch((error: Error) => {
@@ -94,7 +98,7 @@ export class InventoryController {
             });
 
         return res.json({
-            message: 'User has been deleted'
+            message: 'Inventory has been deleted'
         });
     }
 }

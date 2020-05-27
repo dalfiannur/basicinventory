@@ -6,9 +6,10 @@
 // Created At   5/24/20
 
 import Express from 'express';
-import {Application} from 'express';
+import {Application, json, urlencoded} from 'express';
 import {Routes} from "./Routes";
 import {createConnection} from 'typeorm';
+import {ErrorMiddleware} from "./Middleware/ErrorMiddleware";
 
 export class Server {
     private app: Application;
@@ -28,7 +29,10 @@ export class Server {
 
     private setupRouter() {
         const routes = new Routes('v1');
+        this.app.use(json());
+        this.app.use(urlencoded({ extended: true }));
         this.app.use(routes.all());
+        this.app.use(ErrorMiddleware);
     }
 
     public start(port: number = 8000) {

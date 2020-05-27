@@ -5,10 +5,9 @@
 // Github       https://github.com/dalfiannur
 // Created At   5/27/20
 
-import {IPaginationRequest} from "../Requests/IPaginationRequest";
+import {PaginationRequest} from "../Requests/PaginationRequest";
 
-export const ParsePaginationRequest = (req: IPaginationRequest) => ({
-    page: req.page || 1,
+export const ParsePaginationRequest = (req: PaginationRequest) => ({
     take: req.limit || 15,
     skip: (req.page ? req.page - 1 : 0) * (req.limit || 15)
 });

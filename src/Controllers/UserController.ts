@@ -6,18 +6,17 @@
 // Created At   5/24/20
 
 import {NextFunction, Request, Response} from "express";
-import {FindAll} from "../Requests/UserRequest";
+import {IFindAllUsers, ICreateUser, IUpdateUser} from "../Requests/UserRequest";
 import {getRepository, Repository} from "typeorm";
 import {User} from "../Entities/User";
+import {ParsePaginationRequest} from "../Helpers/PaginationHelper";
+import {genSaltSync, hashSync} from 'bcrypt';
 
 export class UserController {
-    private readonly repository: Repository<User> = getRepository(User);
+    private repository: Repository<User> = getRepository(User);
 
-    public async findAll(req: FindAll, res: Response, next: NextFunction) {
-        const page = req.query.page || 1;
-        const limit = req.query.limit || 15;
-        const skip = parseFloat(<string>page) - 1;
-        const take = parseFloat(<string>limit);
+    public findAll = async (req: IFindAllUsers, res: Response, next: NextFunction) => {
+        const { take, skip } = ParsePaginationRequest(req);
 
         const [users, total] = await this.repository
             .findAndCount({ skip, take })
@@ -33,7 +32,7 @@ export class UserController {
         });
     }
 
-    public async findById(req: Request, res: Response, next: NextFunction) {
+    public findById = async (req: Request, res: Response, next: NextFunction) => {
         const id = +req.params.id;
         const user = await this.repository.findOne(id);
 
@@ -45,7 +44,9 @@ export class UserController {
         });
     }
 
-    public async create(req: Request, res: Response, next: NextFunction) {
+    public create = async (req: ICreateUser, res: Response, next: NextFunction) => {
+        req.body.password = hashSync(req.body.password, genSaltSync());
+
         const user = this.repository.create(req.body);
 
         await this.repository.insert(user)
@@ -59,7 +60,7 @@ export class UserController {
         });
     }
 
-    public async updateById(req: Request, res: Response, next: NextFunction) {
+    public updateById = async (req: IUpdateUser, res: Response, next: NextFunction) => {
         const id = +req.params.id;
         const user = await this.repository.findOne(id);
 
@@ -68,8 +69,6 @@ export class UserController {
         const prevData = user;
 
         user.name = req.body.name || user.name;
-        user.username = req.body.username || user.username;
-        user.password = req.body.password || user.password;
 
         await this.repository.save(user)
             .catch((error: Error) => {
@@ -85,7 +84,7 @@ export class UserController {
         });
     }
 
-    public async deleteById(req: Request, res: Response, next: NextFunction) {
+    public deleteById = async (req: Request, res: Response, next: NextFunction) => {
         const id = +req.params.id;
         const user = await this.repository.findOne(id);
 

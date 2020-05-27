@@ -5,5 +5,5 @@
   "username": "qisk",
   "password": "1sampai8",
   "database": "basicinventory",
-  "entities": ["src/Entities/**/*.ts"]
+  "entities": ["src/Entities/*.ts"]
 }
