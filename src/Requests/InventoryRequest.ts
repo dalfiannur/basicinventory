@@ -16,7 +16,7 @@ export interface ICreateInventory extends ISecureRequest {
     body: {
         isOut: boolean,
         quantity: number,
-        createdByUserId: number
+        createdById: number
     };
 }
 
@@ -24,6 +24,6 @@ export interface IUpdateInventory extends ISecureRequest {
     body: {
         isOut: boolean,
         quantity: number,
-        updatedByUserId: number
+        updatedById: number
     }
 }

@@ -6,10 +6,11 @@
 // Created At   5/27/20
 
 import {NextFunction, Request, Response} from "express";
-import {getRepository, Repository} from "typeorm";
+import {getRepository, Repository, getConnection} from "typeorm";
 import {Inventory} from "../Entities/Inventory";
 import {ICreateInventory, IFindAllInventories, IUpdateInventory} from "../Requests/InventoryRequest";
 import {ParsePaginationRequest} from "../Helpers/PaginationHelper";
+import {User} from "../Entities/User";
 
 export class InventoryController {
     private readonly repository: Repository<Inventory> = getRepository(Inventory);
@@ -33,11 +34,17 @@ export class InventoryController {
 
     public findById = async (req: Request, res: Response, next: NextFunction) => {
         const id = +req.params.id;
+
         const inventory = await this.repository.findOne(id, {
             relations: ['createdBy', 'updatedBy']
+        }).catch((error: Error) => {
+            throw next(error);
         });
 
         if (!inventory) throw next(new Error('Inventory not found'));
+
+        delete inventory.createdBy.password;
+        if (inventory.updatedBy) delete inventory.updatedBy.password;
 
         return res.json({
             message: 'Inventory found',
@@ -46,7 +53,7 @@ export class InventoryController {
     }
 
     public create = async (req: ICreateInventory, res: Response, next: NextFunction) => {
-        req.body.createdByUserId = req.user.id;
+        req.body.createdById = req.user.id;
         const inventory = this.repository.create(req.body);
 
         await this.repository.insert(inventory)
@@ -70,7 +77,7 @@ export class InventoryController {
 
         inventory.isOut = req.body.isOut || inventory.isOut;
         inventory.quantity = req.body.quantity || inventory.quantity;
-        inventory.updatedByUserId = req.user.id;
+        inventory.updatedById = req.user.id;
 
         await this.repository.save(inventory)
             .catch((error: Error) => {

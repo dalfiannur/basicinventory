@@ -5,7 +5,10 @@
 // Github       https://github.com/dalfiannur
 // Created At   5/27/20
 
-import {PaginationRequest} from "../Requests/PaginationRequest";
+interface PaginationRequest {
+    page?: number;
+    limit?: number;
+}
 
 export const ParsePaginationRequest = (req: PaginationRequest) => ({
     take: req.limit || 15,

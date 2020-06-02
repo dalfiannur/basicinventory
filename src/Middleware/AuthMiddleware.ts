@@ -8,7 +8,6 @@
 import {Response, Request, NextFunction} from "express";
 import { verify } from 'jsonwebtoken';
 import config from 'config';
-import {ISecureRequest} from "../Requests/SecureRequest";
 import {User} from "../Entities/User";
 
 export const AuthMiddleware = (req: Request, res: Response, next: NextFunction) => {

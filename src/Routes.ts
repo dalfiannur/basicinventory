@@ -35,7 +35,7 @@ export class Routes {
         router.get('/users', AuthMiddleware, controller.findAll);
         router.get('/users/:id', AuthMiddleware, controller.findById);
         // @ts-ignore
-        router.post('/users', AuthMiddleware, controller.create);
+        router.post('/users', controller.create);
         // @ts-ignore
         router.put('/users/:id', AuthMiddleware, controller.updateById);
         router.delete('/users/:id', AuthMiddleware, controller.deleteById);

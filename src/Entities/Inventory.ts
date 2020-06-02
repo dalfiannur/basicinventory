@@ -8,8 +8,8 @@
 import {
     Column,
     CreateDateColumn,
-    Entity, JoinColumn,
-    ManyToOne,
+    Entity, JoinColumn, JoinTable,
+    ManyToOne, OneToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
@@ -23,10 +23,10 @@ export class Inventory {
     id!: number;
 
     @Column()
-    createdByUserId!: number;
+    createdById!: number;
 
     @Column()
-    updatedByUserId?: number;
+    updatedById?: number;
 
     @Column()
     isOut!: boolean;
@@ -34,16 +34,12 @@ export class Inventory {
     @Column()
     quantity!: number;
 
-    @ManyToOne(type => User)
-    @JoinColumn({
-        referencedColumnName: 'createdByUserId'
-    })
+    @OneToOne(type => User)
+    @JoinColumn()
     createdBy!: User;
 
-    @ManyToOne(type => User)
-    @JoinColumn({
-        referencedColumnName: 'updatedByUserId'
-    })
+    @OneToOne(type => User)
+    @JoinColumn()
     updatedBy?: User;
 
     @CreateDateColumn()

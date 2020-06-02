@@ -5,7 +5,8 @@
 // Github       https://github.com/dalfiannur
 // Created At   5/25/20
 
-import {Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {Inventory} from "./Inventory";
 
 @Entity({
     name: 'Users'
